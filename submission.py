@@ -11,12 +11,12 @@ def stratified_random_sampler(original_path, new_stratified_name):
         csv_df = pd.read_csv(original_path)
 
         # Remove any short Durations (minute long clips)
-        csv_df.drop(csv_df[csv_df.FileSize/6 < 46].index, inplace=True)
+        csv_df.drop(csv_df[~(csv_df.Duration > 60)].index, inplace=True)
 
         # create a temporary col for Hour Time
-        _, csv_df.loc[:, 'Temp-Hour'] = csv_df['StartDateTime'].str.split(" ").str # ex: 16.06.2019 15:30 -> 15:30
+        csv_df.loc[:, 'Temp-Hour'] = csv_df['Comment'].str.split(" ").str[2] # ex: Recorded at 14:56:49 16/06/2019 ... -> 14:56:49
         # remove min
-        csv_df.loc[:, 'Temp-Hour'], _ = csv_df['Temp-Hour'].str.split(':').str # ex: 15:30 -> 15
+        csv_df.loc[:, 'Temp-Hour']= csv_df['Temp-Hour'].str.split(':').str[0] # ex: 14:56:49 -> 14
 
         grouped = csv_df.groupby(["AudioMothCode", "Temp-Hour"])  # group for second strata layer 
 
@@ -29,7 +29,8 @@ def stratified_random_sampler(original_path, new_stratified_name):
         # Remove any Audiomoth device without enough clips (less than 24)
         csv_df = csv_df.groupby('AudioMothCode').filter(lambda x: len(x) == 24)
 
-        csv_df.to_csv(str(new_stratified_name))  # save stratified data
+        # save stratified data
+        csv_df.to_csv(str(new_stratified_name), index=False)
         
         return True
     
@@ -38,6 +39,6 @@ def stratified_random_sampler(original_path, new_stratified_name):
         return False
 
 
-stratified_random_sampler("", "stratified_data.csv") # add csv path file
+stratified_random_sampler("/Users/aliraza/Desktop/Peru_2019_AudioMoth_Data_Full.csv", "stratified_data.csv")  # add csv path file
 
 
