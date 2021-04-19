@@ -39,6 +39,6 @@ def stratified_random_sampler(original_path, new_stratified_name):
         return False
 
 
-stratified_random_sampler("/Users/aliraza/Desktop/Peru_2019_AudioMoth_Data_Full.csv", "stratified_data.csv")  # add csv path file
+stratified_random_sampler("", "stratified_data.csv")  # add csv path file
 
 
